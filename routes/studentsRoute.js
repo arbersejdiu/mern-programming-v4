@@ -70,16 +70,24 @@ router.get("/delete/:id", async (req, res) => {
   }
 });
 
-router.get("/search/:key", async (req, res) => {
-  const key = req.params.key;
-  let std = await studentsModel.find({
-    $or: [{ name: { $regex: key } }, { email: { $regex: key } }],
-  });
+router.get("/search", async (req, res) => {
+  try {
+    const data = await studentsModel
+      .find({
+        $or: [
+          { name: { $regex: req.query.dsearch } },
+          { email: { $regex: req.query.dsearch } },
+        ],
+      })
+      .try((err, data) => {
+        if (err) {
+          console.log(err);
+        } else {
+          res.render("students", { student: data });
+        }
+      });
+  } catch (error) {
+    console.log(error);
+  }
 });
-
-router.get("/search/:key", async (req, res) => {
-  const key = req.params.key;
-  let std = await studentsModel.findAndUpdate();
-});
-
 module.exports = router;
