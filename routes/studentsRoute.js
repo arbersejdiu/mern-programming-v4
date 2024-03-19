@@ -72,20 +72,13 @@ router.get("/delete/:id", async (req, res) => {
 
 router.get("/search", async (req, res) => {
   try {
-    const data = await studentsModel
-      .find({
-        $or: [
-          { name: { $regex: req.query.dsearch } },
-          { email: { $regex: req.query.dsearch } },
-        ],
-      })
-      .try((err, data) => {
-        if (err) {
-          console.log(err);
-        } else {
-          res.render("students", { student: data });
-        }
-      });
+    const data = await studentsModel.find({
+      $or: [
+        { name: { $regex: req.query.dsearch } },
+        { email: { $regex: req.query.dsearch } },
+      ],
+    });
+    res.render("students", { student: data });
   } catch (error) {
     console.log(error);
   }
