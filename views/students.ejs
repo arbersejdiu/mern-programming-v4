@@ -9,6 +9,7 @@
       rel="stylesheet"
       integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
       crossorigin="anonymous" />
+    <script src="https://cdn.zinggrid.com/zinggrid.min.js"></script>
   </head>
   <body>
     <div class="fluid-container">
@@ -16,6 +17,7 @@
         class="container p-5 d-flex justify-content-between align-items-center">
         <h3 class="">List of students</h3>
         <a href="/new" class="btn btn-primary btn-sm">Add new Student</a>
+        <input type="search" id="inp_search" />
       </div>
       <div class="container">
         <table class="table table-bordered">
@@ -27,7 +29,7 @@
               <th scope="col">Delete</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody id="append_data">
             <% student.forEach(std => { %>
             <tr>
               <td><%=std.name%></td>
@@ -48,10 +50,122 @@
         </table>
       </div>
     </div>
+    <zing-grid src="http://localhost:3000/mern-programing-v3"></zing-grid>
 
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
       crossorigin="anonymous"></script>
+
+    <script>
+      //store table data element
+      const tableDataElem = document.querySelector("#append_data");
+
+      const tableDataa = async () => {
+        fetch("http://localhost:3000/mern-programing-v3")
+          .then(response => response.json())
+          .then(json => console.log(json));
+      };
+      tableDataa();
+      const tableData = tableDataa();
+
+      document.getElementById("demo").innerHTML = response.json;
+
+      //function to build table
+      function buildTable(matchingIDs) {
+        //reset table data
+        tableDataElem.innerHTML = "";
+        //check if parameter is provided
+        if (typeof matchingIDs === "undefined") {
+          //our loop index
+          let ind = 0;
+          //our table index
+          let tableInd = 1;
+          //loop through table object
+          while (ind < Object.keys(tableData).length) {
+            //append data using a template literal
+            tableDataElem.innerHTML += `
+                      <tr>
+                          <td>${tableInd}</td>
+                          <td>${tableData[tableInd][0]}</td>
+                          <td>${tableData[tableInd][1]}</td>
+                          <td>${tableData[tableInd][2]}</td>
+                          <td>${tableData[tableInd][3]}</td>
+                      </tr>
+                  `;
+            //increment loop index
+            ind++;
+            //increment table index
+            tableInd++;
+          }
+        } else if (matchingIDs.length !== 0) {
+          //check if matchingIDs array is not empty
+          //our loop index
+          let ind = 0;
+          //our table index
+          let tableInd = 1;
+          //loop through matching IDs provided
+          while (ind < matchingIDs.length) {
+            //append data by getting ID of the record and using a template literal
+            tableDataElem.innerHTML += `
+                      <tr>
+                          <td>${tableInd}</td>
+                          <td>${tableData[matchingIDs[ind]][0]}</td>
+                          <td>${tableData[matchingIDs[ind]][1]}</td>
+                          <td>${tableData[matchingIDs[ind]][2]}</td>
+                          <td>${tableData[matchingIDs[ind]][3]}</td>
+                      </tr>
+                  `;
+            //increment loop index
+            ind++;
+            //increment table index
+            tableInd++;
+          }
+        } else {
+          tableDataElem.innerHTML += `
+                  <tr>
+                      <td colspan="5">
+                          NO DATA FOUND
+                      </td>
+                  </tr>
+              `;
+        }
+      }
+      buildTable();
+      //attach event listener
+      document
+        .querySelector("#inp_search")
+        .addEventListener("input", function () {
+          //store the search query
+          let value = this.value.trim();
+          //check if value is not empty
+          if (value) {
+            //store matching record IDs
+            let matchingIDs = [];
+            //loop index
+            let ind = 1;
+            //loop through the data to find matching text
+            while (ind < Object.keys(tableData).length) {
+              //check if current property contains the search query
+              if (
+                tableData[ind][0].includes(value) ||
+                tableData[ind][1].includes(value) ||
+                tableData[ind][2].includes(value) ||
+                tableData[ind][3].includes(value)
+              ) {
+                //store the id of the record
+                matchingIDs.push(ind);
+              }
+              //increment index
+              ind++;
+            }
+            //invoke the function by passing in the matching IDs
+            buildTable(matchingIDs);
+          } else {
+            //invoke the build table function without providing an argument
+            buildTable();
+          }
+        });
+    </script>
   </body>
 </html>

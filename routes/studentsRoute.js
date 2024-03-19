@@ -70,4 +70,16 @@ router.get("/delete/:id", async (req, res) => {
   }
 });
 
+router.get("/search/:key", async (req, res) => {
+  const key = req.params.key;
+  let std = await studentsModel.find({
+    $or: [{ name: { $regex: key } }, { email: { $regex: key } }],
+  });
+});
+
+router.get("/search/:key", async (req, res) => {
+  const key = req.params.key;
+  let std = await studentsModel.findAndUpdate();
+});
+
 module.exports = router;
