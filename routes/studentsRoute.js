@@ -74,8 +74,8 @@ router.get("/search", async (req, res) => {
   try {
     const data = await studentsModel.find({
       $or: [
-        { name: { $regex: req.query.dsearch } },
-        { email: { $regex: req.query.dsearch } },
+        { name: { $regex: req.query.dsearch, $options: "i" } },
+        { email: { $regex: req.query.dsearch, $options: "i" } },
       ],
     });
     res.render("students", { student: data });
